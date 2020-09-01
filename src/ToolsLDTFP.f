@@ -1,28 +1,28 @@
-c=======================================================================                  
-c=======================================================================                  
+c=======================================================================
+c=======================================================================
 c     SUBROUTINES FOR LDTFP
 c
 c      Alejandro Jara
 c      Department of Statistics
 c      Facultad de Matematicas
 c      Pontificia Universidad Catolica de Chile
-c      Casilla 306, Correo 22 
+c      Casilla 306, Correo 22
 c      Santiago
 c      Chile
 c      Voice: +56-2-3544506  URL  : http://www.mat.puc.cl/~ajara
 c      Fax  : +56-2-3547729  Email: atjara@uc.cl
 c
-c=======================================================================                  
-c=======================================================================                  
+c=======================================================================
+c=======================================================================
 
-c=======================================================================      
+c=======================================================================
       subroutine hpddensregdtfp(nsave,npred,ngrid,worksam,worksam2,fs,
      &                          llower,lupper,tband)
 c=======================================================================
 c     Compute CI for the conditional densities.
 c     Alejandro Jara, 2007-2011
 c=======================================================================
-      implicit none 
+      implicit none
 
 c++++ External parameters
       integer nsave,npred,ngrid,tband
@@ -32,7 +32,7 @@ c++++ External working
       double precision worksam(nsave)
       double precision worksam2(nsave,ngrid)
 
-c++++ Output      
+c++++ Output
       double precision llower(npred,ngrid)
       double precision lupper(npred,ngrid)
 
@@ -41,36 +41,36 @@ c++++ Internal parameters
       double precision aupp(2),alow(2)
 
 c++++ Internal working
-      integer i,ii,j,l   
+      integer i,ii,j,l
 
 c++++ Algorithm
 
       alpha=0.05d0
-  
+
       open(unit=1,file='dppackage_dftp1.out',status='old',
      &     form='unformatted')
 
        do ii=1,npred
-          do i=1,nsave 
+          do i=1,nsave
              call rchkusr()
              do j=1,npred
                 read(1) (fs(l),l=1,ngrid)
                 if(ii.eq.j)then
                    do l=1,ngrid
-                      worksam2(i,l)=fs(l) 
+                      worksam2(i,l)=fs(l)
                    end do
                 end if
              end do
-           end do  
+           end do
            rewind(unit=1)
-          
+
            do i=1,ngrid
               do j=1,nsave
-                 worksam(j)=worksam2(j,i) 
+                 worksam(j)=worksam2(j,i)
               end do
-          
+
               call hpd(nsave,alpha,worksam,alow,aupp)
-           
+
               if(tband.eq.1)then
                  llower(ii,i)=alow(2)
                  lupper(ii,i)=aupp(2)
@@ -80,22 +80,22 @@ c++++ Algorithm
               end if
 
            end do
-       end do      
+       end do
 
-       close(unit=1)      
+       close(unit=1)
 
        return
        end
 
 
-c=======================================================================      
+c=======================================================================
       subroutine hpddensregdtfps(nsave,npred,ngrid,worksam,worksam2,fs,
      &                           llower,lupper,tband)
 c=======================================================================
 c     Compute CI for the conditional survival functions.
 c     Alejandro Jara, 2007-2011
 !=======================================================================
-      implicit none 
+      implicit none
 
 c++++ External parameters
       integer nsave,npred,ngrid,tband
@@ -105,7 +105,7 @@ c++++ External working
       double precision worksam(nsave)
       double precision worksam2(nsave,ngrid)
 
-c++++ Output      
+c++++ Output
       double precision llower(npred,ngrid)
       double precision lupper(npred,ngrid)
 
@@ -114,36 +114,36 @@ c++++ Internal parameters
       double precision aupp(2),alow(2)
 
 c++++ Internal working
-      integer i,ii,j,l   
+      integer i,ii,j,l
 
 c++++ Algorithm
 
       alpha=0.05d0
-  
+
       open(unit=2,file='dppackage_dftp2.out',status='old',
      &     form='unformatted')
 
       do ii=1,npred
-         do i=1,nsave 
+         do i=1,nsave
             call rchkusr()
             do j=1,npred
                read(2) (fs(l),l=1,ngrid)
                if(ii.eq.j)then
                   do l=1,ngrid
-                     worksam2(i,l)=fs(l) 
+                     worksam2(i,l)=fs(l)
                   end do
                end if
             end do
-          end do  
+          end do
           rewind(unit=2)
-         
+
           do i=1,ngrid
              do j=1,nsave
-                worksam(j)=worksam2(j,i) 
+                worksam(j)=worksam2(j,i)
              end do
-         
+
              call hpd(nsave,alpha,worksam,alow,aupp)
-          
+
              if(tband.eq.1)then
                 llower(ii,i)=alow(2)
                 lupper(ii,i)=aupp(2)
@@ -152,9 +152,9 @@ c++++ Algorithm
                 lupper(ii,i)=aupp(1)
              end if
           end do
-      end do      
+      end do
 
-      close(unit=2)      
+      close(unit=2)
       return
       end
 
@@ -184,11 +184,11 @@ c++++ External working space
       integer k(maxm)
       double precision prob(2**maxm)
       double precision probc(2**maxm)
-    
+
 c++++ working space - scalar
       integer i,ii,j,j1,j2,k1,k2,ll,m
       integer kphi
-      integer nsets 
+      integer nsets
       integer poss1,poss2,poss3
       double precision invcdfnorm
       double precision loglik
@@ -198,23 +198,23 @@ c++++ working space - scalar
 c++++ Algorithm
 
       nsets=2**maxm
- 
+
       do i=1,nsets
          prob(i)=0.0
-         probc(i)=0.0         
+         probc(i)=0.0
       end do
 
       do i=1,maxm
          k(i)=0
       end do
- 
+
       do ii=1,npred
 
          poss1=0
          poss2=0
          poss3=0
          do i=1,nsets
-     
+
             if(i.eq.1)then
                do j1=1,maxm
                   k(j1)=1
@@ -225,13 +225,13 @@ c++++ Algorithm
                  kphi=int(real(2**j1)*tmp2+1)
                  k(j1)=kphi
               end do
-           end if 
+           end if
 
-           loglik=0.d0  
+           loglik=0.d0
 
 c+++++++++ check if the user has requested an interrupt
            call rchkusr()
-     
+
            j=0
            m=0
            tmp1=0.0
@@ -239,13 +239,13 @@ c+++++++++ check if the user has requested an interrupt
               if(j1.eq.1)then
                  j2=k(j1)
                  k2=1
-               else 
+               else
                  j2=j+k(j1)
                  k2=m+k(j1-1)
-              end if   
+              end if
               j=j+2**j1
               m=m+2**(j1-1)
-  
+
               if(j1.eq.1)then
                  ll=1
                 else
@@ -259,25 +259,25 @@ c+++++++++ check if the user has requested an interrupt
               tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
               if(k(j1).eq.ll)then
-                 loglik=loglik+log(tmp3) 
+                 loglik=loglik+log(tmp3)
                else
                  tmp3=1.0-tmp3
-                 loglik=loglik+log(tmp3) 
-              end if   
+                 loglik=loglik+log(tmp3)
+              end if
            end do
-        
+
            prob(i)=exp(loglik)
 
            if(i.eq.1)then
               probc(i)=prob(i)
-             else 
+             else
               probc(i)=prob(i)+probc(i-1)
-           end if   
+           end if
 
            if(poss1.eq.0)then
               if(qqnum(1).lt.probc(i))poss1=i
            end if
-        
+
            if(poss2.eq.0)then
               if(qqnum(2).lt.probc(i))poss2=i
            end if
@@ -285,7 +285,7 @@ c+++++++++ check if the user has requested an interrupt
            if(poss3.eq.0)then
               if(qqnum(3).lt.probc(i))poss3=i
            end if
-        
+
         end do
 
         tmp1=qqnum(1)-probc(poss1)+real(poss1)*prob(poss1)
@@ -298,10 +298,10 @@ c        call dblepr("qworks",-1,qworks,1)
 
         tmp1=0.d0
         do i=1,pce
-           tmp1=tmp1+xcepred(ii,i)*betace(i)      
+           tmp1=tmp1+xcepred(ii,i)*betace(i)
         end do
-        qworkr=invcdfnorm(tmp3,tmp1,sqrt(sigma2),1,0) 
-  
+        qworkr=invcdfnorm(tmp3,tmp1,sqrt(sigma2),1,0)
+
 c        qworkr2=tmp1+sqrt(sigma2)*qworks
 c        call dblepr("q1",-1,qworkr,1)
 c        call dblepr("q1",-1,qworkr2,1)
@@ -314,21 +314,21 @@ c        call dblepr("q1",-1,qworkr2,1)
         tmp3=tmp1/tmp2
         tmp1=0.d0
         do i=1,pce
-           tmp1=tmp1+xcepred(ii,i)*betace(i)      
+           tmp1=tmp1+xcepred(ii,i)*betace(i)
         end do
-        qworkr=invcdfnorm(tmp3,tmp1,sqrt(sigma2),1,0) 
+        qworkr=invcdfnorm(tmp3,tmp1,sqrt(sigma2),1,0)
 
         qquanm(ii,2)=qquanm(ii,2)+qworkr
         qquanw(ii,2)=qworkr
 
         tmp1=qqnum(3)-probc(poss3)+real(poss3)*prob(poss3)
         tmp2=real(nsets)*prob(poss3)
-        tmp3=tmp1/tmp2 
+        tmp3=tmp1/tmp2
         tmp1=0.d0
         do i=1,pce
-           tmp1=tmp1+xcepred(ii,i)*betace(i)      
+           tmp1=tmp1+xcepred(ii,i)*betace(i)
         end do
-        qworkr=invcdfnorm(tmp3,tmp1,sqrt(sigma2),1,0) 
+        qworkr=invcdfnorm(tmp3,tmp1,sqrt(sigma2),1,0)
 
 c        call dblepr("tmp3",-1,"tmp3",1)
 c        call dblepr("q3",-1,"qworkr",1)
@@ -340,7 +340,7 @@ c        call dblepr("q3",-1,"qworkr",1)
 
       return
       end
- 
+
 c=======================================================================
       subroutine cdfldtfp(ii,val,maxm,ntlr,nrec,pce,ptf,betace,
      &                    betatf,sigma2,xtf,xce,cdfval,k,prob,probc)
@@ -350,7 +350,7 @@ c=======================================================================
       implicit none
 
 c++++ Input
-      integer ii  
+      integer ii
       integer maxm,ntlr,nrec,pce,ptf
       double precision betace(pce)
       double precision betatf(ntlr,ptf)
@@ -370,14 +370,14 @@ c++++ External working space
 c++++ Internal working space - scalar
       integer i,j,j1,j2,k1,k2,ll,m
       integer kphi
-      integer nsets 
+      integer nsets
       integer possi
       double precision cdfnorm
       double precision loglik
       double precision accsum
       double precision cdfw
       double precision tmp1,tmp2,tmp3
-      double precision ee  
+      double precision ee
 
 c++++ Algorithm
 
@@ -388,8 +388,8 @@ c++++ Algorithm
       end do
       do i=1,maxm
          k(i)=0
-      end do 
- 
+      end do
+
       tmp2=0.d0
       do i=1,pce
          tmp2=tmp2+xce(ii,i)*betace(i)
@@ -400,17 +400,17 @@ c++++ Algorithm
          tmp2=0.999968
        else if(tmp1.lt.-4.0)then
          tmp2=0.000032
-       else 
+       else
          tmp2=cdfnorm(val,tmp2,sqrt(sigma2),1,0)
       end if
       cdfw=tmp2
- 
+
       kphi=int(real(2**maxm)*tmp2+1)
       possi=kphi
 
       accsum=0.d0
       do i=1,nsets
-     
+
          if(i.eq.1)then
             do j1=1,maxm
                k(j1)=1
@@ -421,13 +421,13 @@ c++++ Algorithm
                kphi=int(real(2**j1)*tmp2+1)
                k(j1)=kphi
             end do
-         end if 
+         end if
 
-         loglik=0.d0  
+         loglik=0.d0
 
 c+++++++ check if the user has requested an interrupt
          call rchkusr()
-     
+
          j=0
          m=0
          tmp1=0.d0
@@ -435,13 +435,13 @@ c+++++++ check if the user has requested an interrupt
             if(j1.eq.1)then
                j2=k(j1)
                k2=1
-             else 
+             else
                j2=j+k(j1)
                k2=m+k(j1-1)
-            end if   
+            end if
             j=j+2**j1
             m=m+2**(j1-1)
-  
+
             if(j1.eq.1)then
                ll=1
               else
@@ -455,13 +455,13 @@ c+++++++ check if the user has requested an interrupt
             tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
             if(k(j1).eq.ll)then
-               loglik=loglik+log(tmp3) 
+               loglik=loglik+log(tmp3)
              else
                tmp3=1.0-tmp3
-               loglik=loglik+log(tmp3) 
-            end if   
+               loglik=loglik+log(tmp3)
+            end if
          end do
-        
+
          prob(i)=dexp(loglik)
          accsum=accsum+prob(i)
       end do
@@ -470,18 +470,18 @@ c+++++++ check if the user has requested an interrupt
          prob(i)=prob(i)/accsum
          if(i.eq.1)then
             probc(i)=prob(i)
-           else 
+           else
             probc(i)=prob(i)+probc(i-1)
-         end if   
+         end if
       end do
 
       if(possi.eq.1)then
          cdfval=prob(possi)*(real(nsets)*cdfw-real(possi-1))
        else
          cdfval=probc(possi-1)+prob(possi)*
-     &          (real(nsets)*cdfw-real(possi-1)) 
+     &          (real(nsets)*cdfw-real(possi-1))
        end if
-  
+
       if(cdfval.gt.1.0)then
          cdfval=1.d0
 
@@ -492,18 +492,18 @@ c         call dblepr("ress",-1,ee,1)
 c         call dblepr("cdfw",-1,cdfw,1)
 c         call dblepr("cdfval",-1,cdfval,1)
 c         call rexit("error in cdf: upper")
-      end if  
+      end if
 
       if(cdfval.lt.0.d0)then
          call intpr("possi",-1,possi,1)
-         call dblepr("betace",-1,betace,pce)
-         call dblepr("val",-1,val,1)
-         call dblepr("ress",-1,ee,1)
-         call dblepr("cdfw",-1,cdfw,1)
-         call dblepr("cdfval",-1,cdfval,1)
+c         call dblepr("betace",-1,betace,pce)
+c         call dblepr("val",-1,val,1)
+c         call dblepr("ress",-1,ee,1)
+c         call dblepr("cdfw",-1,cdfw,1)
+c         call dblepr("cdfval",-1,cdfval,1)
          call rexit("error in cdf: lower")
-      end if    
-  
+      end if
+
       return
       end
 
@@ -521,7 +521,7 @@ c++++ Input
       double precision betace(pce)
       double precision betatf(ntlr,ptf)
       double precision sigma2
-      double precision xce(nrec,pce)  
+      double precision xce(nrec,pce)
       double precision xtf(nrec,ptf)
 
 c++++ Output
@@ -545,7 +545,7 @@ c++++ Algorithm
 
 c++++ check if the user has requested an interrupt
       call rchkusr()
-  
+
       tmp2=0.d0
       do i=1,pce
          tmp2=tmp2+xce(ii,i)*betace(i)
@@ -559,7 +559,7 @@ c++++ check if the user has requested an interrupt
          tmp2=0.999968
         else if(tmp1.lt.-4.0)then
          tmp2=0.000032
-        else 
+        else
          tmp2=cdfnorm(yc,tmp2,sqrt(sigma2),1,0)
        end if
 
@@ -574,10 +574,10 @@ c++++ check if the user has requested an interrupt
           if(j1.eq.1)then
              j2=k(j1)
              k2=1
-           else 
+           else
              j2=j+k(j1)
              k2=m+k(j1-1)
-          end if   
+          end if
           j=j+2**j1
           m=m+2**(j1-1)
           if(j1.eq.1)then
@@ -593,14 +593,14 @@ c++++ check if the user has requested an interrupt
           tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
           if(k(j1).eq.ll)then
-             loglik=loglik+log(tmp3) 
+             loglik=loglik+log(tmp3)
            else
              tmp3=1.0-tmp3
-             loglik=loglik+log(tmp3) 
-          end if   
+             loglik=loglik+log(tmp3)
+          end if
        end do
-       loglik=loglik+real(maxm)*log(2.0) 
-   
+       loglik=loglik+real(maxm)*log(2.0)
+
        return
        end
 
@@ -643,18 +643,18 @@ c++++ Algorithm
 
       do i=1,maxm
          k(i)=0
-      end do   
+      end do
 
 c++++ check if the user has requested an interrupt
       call rchkusr()
-  
+
       do ii=1,npred
 
         do jj=1,ngrid
-     
+
            tmp1=0.d0
            do j=1,pce
-              tmp1=tmp1+xcepred(ii,j)*betace(j)      
+              tmp1=tmp1+xcepred(ii,j)*betace(j)
            end do
            tmp=(log(grid(jj))-tmp1)/sqrt(sigma2)
 
@@ -664,7 +664,7 @@ c++++ check if the user has requested an interrupt
               tmp2=0.999968
              else if(tmp.lt.-4.0)then
               tmp2=0.000032
-             else 
+             else
               tmp2=cdfnorm(log(grid(jj)),tmp1,sqrt(sigma2),1,0)
            end if
 
@@ -675,18 +675,18 @@ c++++ check if the user has requested an interrupt
 
 c+++++++++ check if the user has requested an interrupt
            call rchkusr()
-     
+
            j=0
            m=0
            tmp1=0.d0
            do j1=1,maxm
               if(j1.eq.1)then
                  k2=1
-               else 
+               else
                  k2=m+k(j1-1)
-              end if   
+              end if
               m=m+2**(j1-1)
-  
+
               if(j1.eq.1)then
                  ll=1
                 else
@@ -700,15 +700,15 @@ c+++++++++ check if the user has requested an interrupt
               tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
               if(k(j1).eq.ll)then
-                 loglik=loglik+log(tmp3) 
+                 loglik=loglik+log(tmp3)
                else
                  tmp3=1.0-tmp3
-                 loglik=loglik+log(tmp3) 
-              end if   
-           
+                 loglik=loglik+log(tmp3)
+              end if
+
            end do
 
-           loglik=loglik + real(maxm)*log(2.0) 
+           loglik=loglik + real(maxm)*log(2.0)
            loglik=loglik - log(grid(jj))
 
            densw(ii,jj)=exp(loglik)
@@ -752,24 +752,24 @@ c++++ Internal working space
       double precision tmp1,tmp2,tmp3
 
 c++++ Algorithm
- 
+
       do i=1,maxm
          k(i)=0
       end do
 
-      do i=1,ntprob  
+      do i=1,ntprob
          nobsbc(i)=0
       end do
       loglik=0.d0
-   
+
       do i=1,nrec
- 
+
 c+++++++ check if the user has requested an interrupt
          call rchkusr()
 
          tmp1=0.d0
          do j=1,pce
-            tmp1=tmp1+xce(i,j)*betace(j)      
+            tmp1=tmp1+xce(i,j)*betace(j)
          end do
          tmp3=(y(i)-tmp1)/dsqrt(sigma2)
 
@@ -779,7 +779,7 @@ c+++++++ check if the user has requested an interrupt
             tmp2=0.999968
            else if(tmp3.lt.-4.0)then
             tmp2=0.000032
-           else 
+           else
             tmp2=cdfnorm(y(i),tmp1,sqrt(sigma2),1,0)
          end if
 
@@ -789,7 +789,7 @@ c+++++++ check if the user has requested an interrupt
          end do
 
 c         call intpr("k",-1,k,maxm)
-     
+
          j=0
          m=0
          tmp1=0.d0
@@ -797,10 +797,10 @@ c         call intpr("k",-1,k,maxm)
             if(j1.eq.1)then
                j2=k(j1)
                k2=1
-             else 
+             else
                j2=j+k(j1)
                k2=m+k(j1-1)
-            end if   
+            end if
             j=j+2**j1
             m=m+2**(j1-1)
 
@@ -820,14 +820,14 @@ c         call intpr("k",-1,k,maxm)
             tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
             if(k(j1).eq.ll)then
-               loglik=loglik+log(tmp3) 
+               loglik=loglik+log(tmp3)
              else
                tmp3=1.0-tmp3
-               loglik=loglik+log(tmp3) 
-            end if   
+               loglik=loglik+log(tmp3)
+            end if
          end do
-         loglik=loglik+real(maxm)*log(2.0) 
-    
+         loglik=loglik+real(maxm)*log(2.0)
+
       end do
 
 c      call intpr("nobsbc",-1,nobsbc,ntprob)
@@ -868,13 +868,13 @@ c++++ Algorithm
       do i=1,ptf
          beta(i)=betatf(kk,i)
       end do
-  
+
 c++++ MLE with nri stept of N-R
 
       do nhr=1,nri
 
          do i=1,ptf
-            do j=1,ptf 
+            do j=1,ptf
                xtx(i,j)=c0(i,j)
             end do
             xty(i)=0.d0
@@ -884,7 +884,7 @@ c++++ MLE with nri stept of N-R
          if(n1.gt.0)then
             do i=1,n1
                ll=obsbc(ii,i)
-     
+
 c+++++++++++++ check if the user has requested an interrupt
                call rchkusr()
 
@@ -897,7 +897,7 @@ c+++++++++++++ check if the user has requested an interrupt
                tmp1=dexp(eta)/((1.d0+dexp(eta))*
      &              (1.d0+dexp(eta)))
                gprime=1.d0/tmp1
-               ytilde=eta+(1.d0-mu)*gprime 
+               ytilde=eta+(1.d0-mu)*gprime
 
                do j=1,ptf
                   do k=1,ptf
@@ -911,7 +911,7 @@ c+++++++++++++ check if the user has requested an interrupt
          if(n2.gt.0)then
             do i=1,n1
                ll=obsbc(jj,i)
-     
+
 c+++++++++++++ check if the user has requested an interrupt
                call rchkusr()
 
@@ -924,7 +924,7 @@ c+++++++++++++ check if the user has requested an interrupt
                tmp1=dexp(eta)/((1.d0+dexp(eta))*
      &              (1.d0+dexp(eta)))
                gprime=1.d0/tmp1
-               ytilde=eta+(0.d0-mu)*gprime 
+               ytilde=eta+(0.d0-mu)*gprime
 
                do j=1,ptf
                   do k=1,ptf
@@ -941,7 +941,7 @@ c+++++++++++++ check if the user has requested an interrupt
          do i=1,ptf
             tmp1=0.d0
             do j=1,ptf
-               tmp1=tmp1+xtx(i,j)*xty(j) 
+               tmp1=tmp1+xtx(i,j)*xty(j)
             end do
             beta(i)=tmp1
          end do
@@ -983,7 +983,7 @@ c++++ Working space
       integer i,j
 
 c++++ Algorithm
- 
+
       do i=1,ptf
          do j=1,ptf
             xtx(i,j)=c0(i,j)
@@ -998,7 +998,7 @@ c++++ Algorithm
       end do
       return
       end
- 
+
 c=======================================================================
       subroutine updatelrcoefldtfp(kk,ii,jj,n1,n2,maxm,ntlr,ntprob,
      &                             nrec,ptf,obsbc,betatf,xtf,c0,
@@ -1046,17 +1046,17 @@ c++++ Algorithm
       logpriorn=0.d0
       logcgko=0.d0
       logcgkn=0.d0
-  
+
       accept=0
-  
+
       do i=1,ptf
          beta(i)=betatf(kk,i)
       end do
-  
+
 c++++ generating the candidate
 
       do i=1,ptf
-         do j=1,ptf 
+         do j=1,ptf
             xtx(i,j)=c0(i,j)
          end do
          xty(i)=0.d0
@@ -1067,7 +1067,7 @@ c++++ generating the candidate
       if(n1.gt.0)then
          do i=1,n1
             ll=obsbc(ii,i)
-     
+
 c++++++++++ check if the user has requested an interrupt
             call rchkusr()
 
@@ -1081,7 +1081,7 @@ c++++++++++ check if the user has requested an interrupt
 
             tmp1=mu*(1.0-mu)
             ytilde=eta+(1.0+exp(eta))/exp(eta)
- 
+
             do j=1,ptf
                do k=1,ptf
                   xtx(j,k)=xtx(j,k)+
@@ -1095,7 +1095,7 @@ c++++++++++ check if the user has requested an interrupt
       if(n2.gt.0)then
          do i=1,n2
             ll=obsbc(jj,i)
-     
+
 c++++++++++ check if the user has requested an interrupt
             call rchkusr()
 
@@ -1125,7 +1125,7 @@ c++++++++++ check if the user has requested an interrupt
        do i=1,ptf
          tmp1=0.d0
          do j=1,ptf
-             tmp1=tmp1+xtx(i,j)*xty(j) 
+             tmp1=tmp1+xtx(i,j)*xty(j)
           end do
           betam(i)=tmp1
        end do
@@ -1139,7 +1139,7 @@ c+++++ evaluating the candidate generating kernel
 c+++++ evaluating the likelihood for the candidate
 
        do i=1,ptf
-          do j=1,ptf 
+          do j=1,ptf
              xtx(i,j)=c0(i,j)
           end do
           xty(i)=0.d0
@@ -1150,7 +1150,7 @@ c+++++ evaluating the likelihood for the candidate
        if(n1.gt.0)then
           do i=1,n1
              ll=obsbc(ii,i)
-     
+
 c+++++++++++ check if the user has requested an interrupt
              call rchkusr()
 
@@ -1178,7 +1178,7 @@ c+++++++++++ check if the user has requested an interrupt
        if(n2.gt.0)then
           do i=1,n2
              ll=obsbc(jj,i)
-     
+
 c+++++++++++ check if the user has requested an interrupt
              call rchkusr()
 
@@ -1192,7 +1192,7 @@ c+++++++++++ check if the user has requested an interrupt
 
              tmp1=mu*(1.0-mu)
              ytilde=eta-(1.0+exp(eta))
- 
+
              do j=1,ptf
                 do k=1,ptf
                    xtx(j,k)=xtx(j,k)+
@@ -1208,7 +1208,7 @@ c+++++++++++ check if the user has requested an interrupt
        do i=1,ptf
           tmp1=0.d0
           do j=1,ptf
-             tmp1=tmp1+xtx(i,j)*xty(j) 
+             tmp1=tmp1+xtx(i,j)*xty(j)
           end do
           betam(i)=tmp1
        end do
@@ -1218,14 +1218,14 @@ c+++++++++++ check if the user has requested an interrupt
 c+++++ evaluating the prior
 
        do i=1,ptf
-          do j=1,ptf 
+          do j=1,ptf
              xtx(i,j)=c0(i,j)
           end do
           xty(i)=0.d0
        end do
 
        call inverse(xtx,ptf,iflagp)
-   
+
        do i=1,ptf
           do j=1,ptf
              logpriorn=logpriorn+
@@ -1248,7 +1248,7 @@ c+++++ mh step
              betatf(kk,i)=betac(i)
           end do
        end if
-      
+
        return
       end
 
@@ -1294,13 +1294,13 @@ c++++ Working space slice sampling
 c++++ Algorithm
 
       accept=1
-  
+
       do i=1,ptf
          beta(i)=betatf(kk,i)
       end do
-  
+
       do i=1,ptf
-         do j=1,ptf 
+         do j=1,ptf
             xtx(i,j)=c0(i,j)
          end do
       end do
@@ -1310,7 +1310,7 @@ c++++ Algorithm
 
 c+++++++ check if the user has requested an interrupt
          call rchkusr()
-       
+
          evali=1
          xx0=beta(i)
 
@@ -1323,10 +1323,10 @@ c         call dblepr("tmp1",-1,tmp1,1)
          re=-log(uni)
          logy=tmp1-re
 
-         uwork=dble(runif())*0.25d0  
+         uwork=dble(runif())*0.25d0
          llim=xx0-uwork
          rlim=xx0+(0.25d0-uwork)
-           
+
          evali=evali+1
          beta(i)=llim
          call compullldtfp(ii,jj,ptf,n1,n2,nrec,ntprob,obsbc,
@@ -1352,7 +1352,7 @@ c         call dblepr("rlim",-1,rlim,1)
 
 c            call dblepr("llim",-1,llim,1)
 
-         end do 
+         end do
 
          do while(grlim.gt.logy)
             rlim=rlim+0.25d0
@@ -1363,7 +1363,7 @@ c            call dblepr("llim",-1,llim,1)
 
 c            call dblepr("rlim",-1,rlim,1)
 
-         end do 
+         end do
 
          xx1=llim+(rlim-llim)*dble(runif())
          beta(i)=xx1
@@ -1406,7 +1406,7 @@ c=======================================================================
       implicit none
 
 c++++ Input
-      integer ii,jj,ptf,n1,n2,nrec,ntprob 
+      integer ii,jj,ptf,n1,n2,nrec,ntprob
       integer obsbc(ntprob,nrec)
       double precision beta(ptf)
       double precision xtx(ptf,ptf)
@@ -1414,7 +1414,7 @@ c++++ Input
 
 c++++ Output
       double precision logp
- 
+
 c++++ Working space
       integer i,j,ll
       double precision eta
@@ -1425,7 +1425,7 @@ c++++ Algorithm
 
       loglikn=0.d0
       logpriorn=0.d0
- 
+
       do i=1,ptf
          do j=1,ptf
             logpriorn=logpriorn+beta(i)*xtx(i,j)*beta(j)
@@ -1459,7 +1459,7 @@ c++++++++++ check if the user has requested an interrupt
       end if
 
       logp=loglikn+logpriorn
-          
+
       return
       end
 
@@ -1500,27 +1500,27 @@ c++++ Internal working space
       double precision dnrm
       double precision tmp1,tmp2,tmp3
       double precision loglikn
-      double precision logpriorn 
+      double precision logpriorn
 
 c++++ Algorithm
- 
+
       do i=1,maxm
          k(i)=0
       end do
 
-      do i=1,ntprob  
+      do i=1,ntprob
          nobsbc(i)=0
       end do
       loglikn=0.d0
-   
+
       do i=1,nrec
- 
+
 c+++++++ check if the user has requested an interrupt
          call rchkusr()
 
          tmp1=0.d0
          do j=1,pce
-            tmp1=tmp1+xce(i,j)*betace(j)      
+            tmp1=tmp1+xce(i,j)*betace(j)
          end do
          tmp3=(y(i)-tmp1)/dsqrt(sigma2)
 
@@ -1530,7 +1530,7 @@ c+++++++ check if the user has requested an interrupt
             tmp2=0.999968
            else if(tmp3.lt.-4.0)then
             tmp2=0.000032
-           else 
+           else
             tmp2=cdfnorm(y(i),tmp1,sqrt(sigma2),1,0)
          end if
 
@@ -1540,7 +1540,7 @@ c+++++++ check if the user has requested an interrupt
          end do
 
 c         call intpr("k",-1,k,maxm)
-     
+
          j=0
          m=0
          tmp1=0.d0
@@ -1548,10 +1548,10 @@ c         call intpr("k",-1,k,maxm)
             if(j1.eq.1)then
                j2=k(j1)
                k2=1
-             else 
+             else
                j2=j+k(j1)
                k2=m+k(j1-1)
-            end if   
+            end if
             j=j+2**j1
             m=m+2**(j1-1)
 
@@ -1571,14 +1571,14 @@ c         call intpr("k",-1,k,maxm)
             tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
             if(k(j1).eq.ll)then
-               loglikn=loglikn+log(tmp3) 
+               loglikn=loglikn+log(tmp3)
              else
                tmp3=1.0-tmp3
-               loglikn=loglikn+log(tmp3) 
-            end if   
+               loglikn=loglikn+log(tmp3)
+            end if
          end do
-         loglikn=loglikn+real(maxm)*log(2.0) 
-    
+         loglikn=loglikn+real(maxm)*log(2.0)
+
       end do
 
       logpriorn=0.d0
@@ -1637,18 +1637,18 @@ c++++ Algorithm
 
       do i=1,maxm
          k(i)=0
-      end do   
+      end do
 
 c++++ check if the user has requested an interrupt
       call rchkusr()
-  
+
       do ii=1,npred
 
         do jj=1,ngrid
-     
+
            tmp1=0.d0
            do j=1,pce
-              tmp1=tmp1+xcepred(ii,j)*betace(j)      
+              tmp1=tmp1+xcepred(ii,j)*betace(j)
            end do
            tmp=(grid(jj)-tmp1)/sqrt(sigma2)
 
@@ -1658,7 +1658,7 @@ c++++ check if the user has requested an interrupt
               tmp2=0.999968
              else if(tmp.lt.-4.0)then
               tmp2=0.000032
-             else 
+             else
               tmp2=cdfnorm(grid(jj),tmp1,sqrt(sigma2),1,0)
            end if
 
@@ -1669,18 +1669,18 @@ c++++ check if the user has requested an interrupt
 
 c+++++++++ check if the user has requested an interrupt
            call rchkusr()
-     
+
            j=0
            m=0
            tmp1=0.d0
            do j1=1,maxm
               if(j1.eq.1)then
                  k2=1
-               else 
+               else
                  k2=m+k(j1-1)
-              end if   
+              end if
               m=m+2**(j1-1)
-  
+
               if(j1.eq.1)then
                  ll=1
                 else
@@ -1694,15 +1694,15 @@ c+++++++++ check if the user has requested an interrupt
               tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
               if(k(j1).eq.ll)then
-                 loglik=loglik+log(tmp3) 
+                 loglik=loglik+log(tmp3)
                else
                  tmp3=1.0-tmp3
-                 loglik=loglik+log(tmp3) 
-              end if   
-           
+                 loglik=loglik+log(tmp3)
+              end if
+
            end do
 
-           loglik=loglik + real(maxm)*log(2.0) 
+           loglik=loglik + real(maxm)*log(2.0)
            densw(ii,jj)=exp(loglik)
            densm(ii,jj)=densm(ii,jj)+exp(loglik)
        end do
@@ -1711,14 +1711,14 @@ c+++++++++ check if the user has requested an interrupt
       end
 
 
-c=======================================================================      
+c=======================================================================
       subroutine hpdldtfpq2(nsave,npred,worksam,worksam2,llower,
      &                      lupper,tband)
 c=======================================================================
 c     Compute CI for the median.
 c     Alejandro Jara, 2011
 c=======================================================================
-      implicit none 
+      implicit none
 c++++ External parameters
       integer nsave,npred,tband
 
@@ -1726,7 +1726,7 @@ c++++ External working
       double precision worksam(nsave)
       double precision worksam2(nsave,npred)
 
-c++++ Output      
+c++++ Output
       double precision llower(npred,3)
       double precision lupper(npred,3)
 
@@ -1735,7 +1735,7 @@ c++++ Internal parameters
       double precision aupp(2),alow(2)
 
 c++++ Internal working
-      integer i,ii,l   
+      integer i,ii,l
 
 c++++ Algorithm
 
@@ -1750,35 +1750,35 @@ c++++ Algorithm
       end do
 
       do ii=1,npred
-         do i=1,nsave 
+         do i=1,nsave
             call rchkusr()
             worksam(i)=worksam2(i,ii)
-         end do  
-         
+         end do
+
          call hpd(nsave,alpha,worksam,alow,aupp)
-          
-         if(tband.eq.1)then  
+
+         if(tband.eq.1)then
             llower(ii,2)=alow(2)
             lupper(ii,2)=aupp(2)
            else
             llower(ii,2)=alow(1)
             lupper(ii,2)=aupp(1)
          end if
-      end do      
+      end do
 
-      close(unit=4)      
+      close(unit=4)
 
       return
       end
 
-c=======================================================================      
+c=======================================================================
       subroutine hpdldtfpq1(nsave,npred,worksam,worksam2,llower,
      &                      lupper,tband)
 c=======================================================================
 c     Compute CI for Q1.
 c     Alejandro Jara, 2011
 c=======================================================================
-      implicit none 
+      implicit none
 c++++ External parameters
       integer nsave,npred,tband
 
@@ -1786,7 +1786,7 @@ c++++ External working
       double precision worksam(nsave)
       double precision worksam2(nsave,npred)
 
-c++++ Output      
+c++++ Output
       double precision llower(npred,3)
       double precision lupper(npred,3)
 
@@ -1795,12 +1795,12 @@ c++++ Internal parameters
       double precision aupp(2),alow(2)
 
 c++++ Internal working
-      integer i,ii,l   
+      integer i,ii,l
 
 c++++ Algorithm
 
       alpha=0.05
-  
+
       open(unit=3,file='dppackage_dftp3.out',status='old',
      &     form='unformatted')
 
@@ -1810,14 +1810,14 @@ c++++ Algorithm
       end do
 
       do ii=1,npred
-         do i=1,nsave 
+         do i=1,nsave
             call rchkusr()
             worksam(i)=worksam2(i,ii)
-         end do  
-         
+         end do
+
          call hpd(nsave,alpha,worksam,alow,aupp)
 
-         if(tband.eq.1)then  
+         if(tband.eq.1)then
             llower(ii,1)=alow(2)
             lupper(ii,1)=aupp(2)
            else
@@ -1825,21 +1825,21 @@ c++++ Algorithm
             lupper(ii,1)=aupp(1)
          end if
 
-      end do      
+      end do
 
-      close(unit=3)      
+      close(unit=3)
 
       return
       end
 
-c=======================================================================      
+c=======================================================================
       subroutine hpdldtfpq3(nsave,npred,worksam,worksam2,llower,
      &                      lupper,tband)
 c=======================================================================
 c     Compute CI for Q3.
 c     Alejandro Jara, 2011
 c=======================================================================
-      implicit none 
+      implicit none
 c++++ External parameters
       integer nsave,npred,tband
 
@@ -1847,7 +1847,7 @@ c++++ External working
       double precision worksam(nsave)
       double precision worksam2(nsave,npred)
 
-c++++ Output      
+c++++ Output
       double precision llower(npred,3)
       double precision lupper(npred,3)
 
@@ -1856,12 +1856,12 @@ c++++ Internal parameters
       double precision aupp(2),alow(2)
 
 c++++ Internal working
-      integer i,ii,l   
+      integer i,ii,l
 
 c++++ Algorithm
 
       alpha=0.05
-  
+
       open(unit=5,file='dppackage_dftp5.out',status='old',
      &     form='unformatted')
 
@@ -1871,23 +1871,23 @@ c++++ Algorithm
       end do
 
       do ii=1,npred
-         do i=1,nsave 
+         do i=1,nsave
             call rchkusr()
             worksam(i)=worksam2(i,ii)
-         end do  
-        
+         end do
+
          call hpd(nsave,alpha,worksam,alow,aupp)
 
-         if(tband.eq.1)then  
+         if(tband.eq.1)then
             llower(ii,3)=alow(2)
             lupper(ii,3)=aupp(2)
            else
             llower(ii,3)=alow(1)
             lupper(ii,3)=aupp(1)
          end if
-      end do      
+      end do
 
-      close(unit=5)      
+      close(unit=5)
 
       return
       end
@@ -1979,18 +1979,18 @@ c++++ Internal working space
       double precision tmp1,tmp2,tmp3
 
 c++++ Algorithm
- 
+
       do i=1,maxm
          k(i)=0
       end do
 
-      do i=1,ntprob  
+      do i=1,ntprob
          nobsbc(i)=0
       end do
       loglik=0.d0
-   
+
       do i=1,nsubject
- 
+
 c+++++++ check if the user has requested an interrupt
          call rchkusr()
 
@@ -2002,7 +2002,7 @@ c+++++++ check if the user has requested an interrupt
             tmp2=0.999968
            else if(tmp3.lt.-4.0)then
             tmp2=0.000032
-           else 
+           else
             tmp2=cdfnorm(b(i),0.d0,sqrt(sigma2b),1,0)
          end if
 
@@ -2018,10 +2018,10 @@ c+++++++ check if the user has requested an interrupt
             if(j1.eq.1)then
                j2=k(j1)
                k2=1
-             else 
+             else
                j2=j+k(j1)
                k2=m+k(j1-1)
-            end if   
+            end if
             j=j+2**j1
             m=m+2**(j1-1)
 
@@ -2041,14 +2041,14 @@ c+++++++ check if the user has requested an interrupt
             tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
             if(k(j1).eq.ll)then
-               loglik=loglik+log(tmp3) 
+               loglik=loglik+log(tmp3)
              else
                tmp3=1.0-tmp3
-               loglik=loglik+log(tmp3) 
-            end if   
+               loglik=loglik+log(tmp3)
+            end if
          end do
-         loglik=loglik+real(maxm)*log(2.0) 
-    
+         loglik=loglik+real(maxm)*log(2.0)
+
       end do
 
       return
@@ -2075,7 +2075,7 @@ c++++ Input
       double precision beta(p)
       double precision betatf(ntlr,ptf)
       double precision sigma2b
-      double precision x(nrec,p+1)  
+      double precision x(nrec,p+1)
       double precision xtf(nsubject,ptf)
 
 c++++ Output
@@ -2106,7 +2106,7 @@ c++++ Algorithm
 
 c++++ check if the user has requested an interrupt
       call rchkusr()
-  
+
 c++++ Prior contribution
 
       logprior=dnrm(bc,0.d0,sqrt(sigma2b),1)
@@ -2117,7 +2117,7 @@ c++++ Prior contribution
          tmp2=0.999968
         else if(tmp1.lt.-4.0)then
          tmp2=0.000032
-        else 
+        else
          tmp2=cdfnorm(bc,0.d0,sqrt(sigma2b),1,0)
       end if
 
@@ -2132,10 +2132,10 @@ c++++ Prior contribution
           if(j1.eq.1)then
              j2=k(j1)
              k2=1
-           else 
+           else
              j2=j+k(j1)
              k2=m+k(j1-1)
-          end if   
+          end if
           j=j+2**j1
           m=m+2**(j1-1)
           if(j1.eq.1)then
@@ -2151,31 +2151,31 @@ c++++ Prior contribution
           tmp3=exp(tmp2)/(1.0+exp(tmp2))
 
           if(k(j1).eq.ll)then
-             logprior=logprior+log(tmp3) 
+             logprior=logprior+log(tmp3)
            else
              tmp3=1.0-tmp3
-             logprior=logprior+log(tmp3) 
-          end if   
+             logprior=logprior+log(tmp3)
+          end if
       end do
-      logprior=logprior+real(maxm)*log(2.0) 
-   
+      logprior=logprior+real(maxm)*log(2.0)
+
 c++++ check if the user has requested an interrupt
       call rchkusr()
-  
+
 c++++ Likelihood contribution
 
-      ni=datastr(ii,1) 
+      ni=datastr(ii,1)
 
       loglik=0.d0
-            
+
       do j=1,ni
-         yij=y(datastr(ii,j+1))            
-            
-         eta=0.d0 
+         yij=y(datastr(ii,j+1))
+
+         eta=0.d0
          do ll=1,p
             eta=eta+x(datastr(ii,j+1),ll)*beta(ll)
          end do
-         eta=eta+bc+x(datastr(ii,j+1),p+1)            
+         eta=eta+bc+x(datastr(ii,j+1),p+1)
 
          tmp1=dexp(eta)
 
@@ -2188,7 +2188,3 @@ c++++ Output
 
       return
       end
-
-
-
-
